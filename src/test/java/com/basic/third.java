@@ -8,6 +8,9 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.DataProvider;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -20,6 +23,7 @@ import org.testng.Assert;
 
 public class third {
     private WebDriver driver;
+    private String testOutputFile;
 
     @BeforeSuite
     public void setUp() {
@@ -45,12 +49,12 @@ public class third {
         WebDriverWait wait = new WebDriverWait(driver, 10);
 
         // Find and clear the email input field
-        WebElement emailInput = driver.findElement(By.xpath("//input[@id='exampleForm.ControlInput1']"));
+        WebElement emailInput = driver.findElement(By.xpath("//*[@id=\"exampleForm.ControlInput1\"]"));
         emailInput.clear(); // Clear any existing text
         emailInput.sendKeys(email);
 
         // Find and clear the password input field
-        WebElement passwordInput = driver.findElement(By.xpath("//input[@id='exampleForm.ControlTextarea1']"));
+        WebElement passwordInput = driver.findElement(By.xpath("//*[@id=\"exampleForm.ControlTextarea1\"]"));
         passwordInput.clear(); // Clear any existing text
         passwordInput.sendKeys(password);
 
@@ -71,9 +75,28 @@ public class third {
     }
 
     @AfterSuite
-    public void tearDown() {
+    public void tearDown() throws InterruptedException {
         if (driver != null) {
             driver.quit();
         }
+    	Thread.sleep(2000);
+    	openTestNGReport();
     }
+    
+    
+    private void openTestNGReport() {
+        testOutputFile = "test-output/index.html";
+        File htmlFile = new File(testOutputFile);
+        if (htmlFile.exists()) {
+            try {
+                Desktop.getDesktop().browse(htmlFile.toURI());
+                System.out.println("TestNG report opened successfully.");
+            } catch (IOException e) {
+                System.out.println("Failed to open TestNG report: " + e.getMessage());
+            }
+        } else {
+            System.out.println("TestNG report file not found: " + testOutputFile);
+        }
+    }
+    
 }
